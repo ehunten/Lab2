@@ -1,2 +1,2 @@
-# Lab2 
-#LCD screen Lab
+# Lab2 - LCD Lab
+
