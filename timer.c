@@ -36,7 +36,7 @@ void initTimer2(){
     T2CONbits.TCKPS = PRESC1;       //Set prescalar
     T2CONbits.TCS = CLEAR;          //Set Oscillator
     IEC0bits.T2IE = ENABLE;         //enable interrupt
-    IPC1bits.T1IP = DEFAULT;        //interrupt priority
+    IPC2bits.T2IP = DEFAULT;
     T2CONbits.ON = ENABLE;          //turn timer on
 }
 //Uses timer 1

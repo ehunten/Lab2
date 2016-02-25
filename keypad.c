@@ -60,6 +60,8 @@ void initKeypad(void){
     ODCG12      = ENABLE;
     
     
+
+    
 }
 
 /* This function will be called AFTER you have determined that someone pressed
@@ -70,6 +72,8 @@ void initKeypad(void){
  */
 char scanKeypad(void){
     char key = -1;
+    
+    
     
     return key;
 }
