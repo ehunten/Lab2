@@ -24,6 +24,15 @@
 #define ODCF1 ODCFbits.ODCF1
 #define ODCG12 ODCGbits.ODCG12
 
+#define LATG13 LATGbits.LATG13
+#define LATG0 LATGbits.LATG0
+#define LATF1 LATFbits.LATF1
+#define LATG12 LATGbits.LATG12
+
+#define PORTD5 PORTDbits.RD5
+#define PORTD11 PORTDbits.RD11
+#define PORTC14 PORTCbits.RC14
+
 
 #define OUT 0
 #define ENABLE 0
