@@ -17,8 +17,8 @@
 
 int main(void)
 {
-    //SYSTEMConfigPerformance(10000000);
-    //enableInterrupts();                  
+    SYSTEMConfigPerformance(10000000);
+    enableInterrupts();                  
     initTimer1();
     initTimer2();
     

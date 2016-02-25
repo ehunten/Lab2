@@ -8,6 +8,7 @@
       <itemPath>keypad.h</itemPath>
       <itemPath>lcd.h</itemPath>
       <itemPath>timer.h</itemPath>
+      <itemPath>../../Lab1_part3/Lab1/interrupt.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,6 +21,7 @@
       <itemPath>lcd.c</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>timer.c</itemPath>
+      <itemPath>../../Lab1_part3/Lab1/interrupt.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -29,6 +31,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>.</Elem>
+    <Elem>../../Lab1_part3/Lab1</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
