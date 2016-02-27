@@ -49,7 +49,6 @@ int main(void)
                 state = wait;
                 break;
              
-                //this case probably isn't necessary but whatever
             case wait: openScanning();
                 break;
                 
@@ -58,6 +57,8 @@ int main(void)
                  break;
 
             case writeKey: printCharLCD(key);
+                 moveCursorLCD();
+            //add logic here for writing to the second line when done?
                  state = wait;
                  break;
 
@@ -80,7 +81,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
     if (IFS1bits.CNDIF == 1){
         IFS1bits.CNDIF = OFF;
         if (PORTC1 == 0 | PORTC2 == 0) {
-            state = keyPress;
+            if (state == wait) {state = keyPress; }
         }
     }
 
@@ -88,7 +89,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
         if (PORTC3 == 0) {
-            state = keyPress;
+            if (state == wait) { state = keyPress; }
         }
     }
 

@@ -34,6 +34,14 @@
 #define LATR3 LATFbits.LATF1
 #define LATR4 LATGbits.LATG12
 
+#define CNPUC1 CNPUDbits.CNPUD5 
+#define CNPUC2 CNPUDbits.CNPUD11 
+#define CNPUC3 CNPUCbits.CNPUC14 
+    
+#define CNENC1 CNENDbits.CNIED5 
+#define CNENC2 CNENDbits.CNIED11 
+#define CNENC3 CNENCbits.CNIEC14 
+
 #define OUT 0
 #define ENABLE 1
 #define DISABLE 0
@@ -62,9 +70,14 @@ void initKeypad(void){
     TRISC3      = IN;
     
     //Enable pull-up resistors for columns
-    CNPUDbits.CNPUD5  = ENABLE;
-    CNPUDbits.CNPUD11 = ENABLE;
-    CNPUCbits.CNPUC14 = ENABLE;
+    CNPUC1      = ENABLE;
+    CNPUC2      = ENABLE;
+    CNPUC3      = ENABLE;
+    
+    //Enable change notifications for columns
+    CNENC1      = ENABLE;
+    CNENC2      = ENABLE;
+    CNENC3      = ENABLE;
 
     //enable open drain collection for rows
     ODCR1       = ENABLE;
