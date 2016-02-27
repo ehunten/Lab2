@@ -7,7 +7,6 @@
 
 void writeLCD(unsigned char word, unsigned int commandType, unsigned int delay); //done?
 void writeFourBits(unsigned char word, unsigned int commandType, unsigned int delayAfter, unsigned int lower); //done?
-void getTimeString ();
 void initLCD(void); //done?
 void clearLCD(void); //done?
 void moveCursorLCD(); //done?

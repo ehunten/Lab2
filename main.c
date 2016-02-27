@@ -13,17 +13,15 @@
 #include "config.h"
 #include "timer.h"
 #include "lcd.h"
+#include "interrupt.h"
 
 //DEFINES
+#define ENABLE 1
 #define OFF 0
-#define LATG13 LATGbits.LATG13
-#define LATG0 LATGbits.LATG0
-#define LATF1 LATFbits.LATF1
-#define LATG12 LATGbits.LATG12
+#define PORTC1 PORTDbits.RD5
+#define PORTC2 PORTDbits.RD11
+#define PORTC3 PORTCbits.RC14
 
-#define PORTD5 PORTDbits.RD5
-#define PORTD11 PORTDbits.RD11
-#define PORTC14 PORTCbits.RC14
 
 typedef enum stateTypeEnum{
     init, wait, keyPress, writeKey
@@ -35,55 +33,63 @@ volatile stateType state = init;
 int main(void)
 {
     SYSTEMConfigPerformance(10000000);
-    enableInterrupts();                  
+    enableInterrupts();
     initTimer1();
     initTimer2();
-    
-    
-    int keyNum = 0;
-    
+    initLCD();
+    clearLCD();
+
+    char key;
+
     while (1) {
-        
-       
-        initLCD();
+
 
         switch (state) {
             case init: printStringLCD("Yooooo");
                 state = wait;
                 break;
-            
-            case wait:
+             
+                //this case probably isn't necessary but whatever
+            case wait: openScanning();
                 break;
                 
-            case keyPress: printStringLCD("Key press!");
-                break;
-                
-            case writeKey: printCharLCD(keyNum);
-                break;
-                
+            case keyPress: key = scanKeypad();
+                 state = writeKey;
+                 break;
+
+            case writeKey: printCharLCD(key);
+                 state = wait;
+                 break;
+
             default: printStringLCD("Ruh roh!");
-                break;
+                    break;
         }
     }
 
-    
+
     return 0;
 }
 
 
 //Button Interrupt
 void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
+
     PORTD;
     PORTC;
-    
+
     if (IFS1bits.CNDIF == 1){
-        IFS1bits.CNDIF = OFF; 
-        state = keyPress;
+        IFS1bits.CNDIF = OFF;
+        if (PORTC1 == 0 | PORTC2 == 0) {
+            state = keyPress;
+        }
     }
-    
+
+
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
-        state = keyPress;
+        if (PORTC3 == 0) {
+            state = keyPress;
+        }
     }
-    
+
 }
