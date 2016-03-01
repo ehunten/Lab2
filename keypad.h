@@ -10,6 +10,7 @@
 
 
 void initKeypad(void);
+void openScanning(void);
 char scanKeypad(void);
 
 #endif	/* KEYPAD_H */
