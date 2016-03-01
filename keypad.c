@@ -46,6 +46,8 @@
 #define ENABLE 1
 #define DISABLE 0
 #define IN 1
+#define CLOSED 1
+#define OPEN 0
 
 typedef enum odc_row_stateEnum{
     row1, row2, row3, row4
@@ -68,16 +70,27 @@ void initKeypad(void){
     TRISC1      = IN;
     TRISC2      = IN;
     TRISC3      = IN;
+     
     
-    //Enable pull-up resistors for columns
-    CNPUC1      = ENABLE;
-    CNPUC2      = ENABLE;
-    CNPUC3      = ENABLE;
+    //Disable pull-up resistors for columns
+    CNPUC1      = DISABLE;
+    CNPUC2      = DISABLE;
+    CNPUC3      = DISABLE;
     
     //Enable change notifications for columns
     CNENC1      = ENABLE;
     CNENC2      = ENABLE;
     CNENC3      = ENABLE;
+    
+    IPC8bits.CNIP = 7;
+    IFS1bits.CNDIF = 0;
+    IFS1bits.CNCIF = 0;
+    IEC1bits.CNDIE = 1;     //Enable interrupt
+    IEC1bits.CNCIE = 1;     //Enable interrupt
+    
+    CNCONDbits.ON = 1;
+    CNCONCbits.ON = 1;
+    
 
     //enable open drain collection for rows
     ODCR1       = ENABLE;
@@ -91,11 +104,11 @@ void initKeypad(void){
  *key to be pressed
  */
 void openScanning (void) {
-    //might be LAT
-    ODCR1       = ENABLE;
-    ODCR2       = ENABLE;
-    ODCR3       = ENABLE;
-    ODCR4       = ENABLE;
+
+    LATR1       = OPEN;
+    LATR2       = OPEN;
+    LATR3       = OPEN;
+    LATR4       = OPEN;
 }
 /* This function will be called AFTER you have determined that someone pressed
  * SOME key. This function is to figure out WHICH key has been pressed.
@@ -104,51 +117,51 @@ void openScanning (void) {
  * the key that is pressed. The ascii character c programmatically is just 'c'
  */
 char scanKeypad(void){
-    char key = -1;
+    char key = 'Q';
 
     switch (odc_row) {
      case row1:
-     ODCR1       = 0;
-     ODCR2       = 1;
-     ODCR3       = 1;
-     ODCR4       = 1;
-       if (PORTC1 == 0) { while (PORTC1 == 0) { return '1'; }}
-       else if (PORTC2 == 0) { while (PORTC2 == 0) { return '2'; }}
-       else if (PORTC3 == 0) { while (PORTC3 == 0) { return '3'; }}
+    LATR1       = OPEN;
+    LATR2       = CLOSED;
+    LATR3       = CLOSED;
+    LATR4       = CLOSED;
+       if (PORTC1 == 0)  { return '1'; } 
+       else if (PORTC2 == 0)  { return '2'; }
+       else if (PORTC3 == 0)  { return '3'; }
      odc_row = row2;
      break;
 
      case row2:
-     ODCR1       = 1;
-     ODCR2       = 0;
-     ODCR3       = 1;
-      if (PORTC1 == 0) { while (PORTC1 == 0) { return '4'; }}
-       else if (PORTC2 == 0) { while (PORTC2 == 0) { return '5'; }}
-       else if (PORTC3 == 0) { while (PORTC3 == 0) { return '6'; }}
-     ODCR4       = 1;
+    LATR1       = CLOSED;
+    LATR2       = OPEN;
+    LATR3       = CLOSED;
+    LATR4       = CLOSED;
+      if (PORTC1 == 0)  { return '4'; }
+       else if (PORTC2 == 0) { return '5'; }
+       else if (PORTC3 == 0) { return '6'; }
      odc_row = row3;
      break;
 
      case row3:
-     ODCR1       = 1;
-     ODCR2       = 1;
-     ODCR3       = 0;
-     ODCR4       = 1;
-      if (PORTC1 == 0) { while (PORTC1 == 0) { return '7'; }}
-       else if (PORTC2 == 0) { while (PORTC2 == 0) { return '8'; }}
-       else if (PORTC3 == 0) { while (PORTC3 == 0) { return '9'; }}
+    LATR1       = CLOSED;
+    LATR2       = CLOSED;
+    LATR3       = OPEN;
+    LATR4       = CLOSED;
+      if (PORTC1 == 0) { return '7'; }
+       else if (PORTC2 == 0) { return '8'; }
+       else if (PORTC3 == 0) { return '9'; }
      odc_row = row4;
      break;
 
      case row4:
-     ODCR1       = 1;
-     ODCR2       = 1;
-     ODCR3       = 1;
-     ODCR4       = 0;
-       if (PORTC1 == 0) { while (PORTC1 == 0) { return '*'; }}
-       else if (PORTC2 == 0) { while (PORTC2 == 0) { return '0'; }}
-       else if (PORTC3 == 0) { while (PORTC3 == 0) { return '#'; }}
-     odc_row = row1;
+    LATR1       = CLOSED;
+    LATR2       = CLOSED;
+    LATR3       = CLOSED;
+    LATR4       = OPEN;
+       if (PORTC1 == 0) { return '*'; }
+       else if (PORTC2 == 0) { return '0'; }
+       else if (PORTC3 == 0) { return '#'; }
+     //odc_row = row1;
      break;
     }
 

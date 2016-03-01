@@ -24,7 +24,7 @@
 
 
 typedef enum stateTypeEnum{
-    init, open, wait, keyPress, writeKey
+    init, open, wait, dbC1, dbD1, keyPress, nextKey
 } stateType;
 
 volatile stateType state = init;
@@ -35,7 +35,7 @@ int main(void)
     
     SYSTEMConfigPerformance(10000000);
     initKeypad();
-    //enableInterrupts();
+    enableInterrupts();
     initTimer1();
     initTimer2();
     initLCD();
@@ -49,26 +49,35 @@ int main(void)
 
 
         switch (state) {
-            case init: printStringLCD("Init State");
+            case init:
+                clearLCD();
                 state = open;
                 break;
              
-            case open: printStringLCD("Open scanning");
+            case open:
                 openScanning();
                 state = wait;
                 break;
                 
-            case wait: printStringLCD("Wait");
+            case wait: 
                 break;
                 
-            case keyPress: printStringLCD("Key Press State");
-                 key = scanKeypad();
-                 state = writeKey;
+            case dbC1: //delayUs(50);
+            state = keyPress;
+                break;
+                
+            case dbD1: //delayUs(50);
+            state = keyPress;
+                break;
+                
+                
+            case keyPress:
+                printCharLCD(scanKeypad());
+                 state = nextKey;
                  break;
 
-            case writeKey: printCharLCD(key);
-                 moveCursorLCD();
-            //add logic here for writing to the second line when done?
+            case nextKey:
+                 //moveCursorLCD();
                  state = open;
                  break;
 
@@ -90,17 +99,35 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
 
     if (IFS1bits.CNDIF == 1){
         IFS1bits.CNDIF = OFF;
-        if (PORTC1 == 0 | PORTC2 == 0) {
-            if (state == wait) {state = keyPress; }
+        if (PORTC1 == 0) {
+            if (state == wait) {state = dbD1; }
         }
+        
+        else if  (PORTC2 == 0) {
+            if (state == wait) {state = dbD1;}
+        }
+        
+        else if (PORTC1 == 1) {
+            // (state == dbD1) {state = dbD2; }
+            
+        }
+        
+        else if (PORTC2 == 1) {
+            //if (state == dbD1) {state = dbD2; }
+        } 
     }
 
 
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
         if (PORTC3 == 0) {
-            if (state == wait) { state = keyPress; }
+            if (state == wait) { state = dbC1; }
+        }
+        else if (PORTC3 == 1) {
+            //if (state == dbC1) { state = dbC2; }
         }
     }
+    
+   
 
 }
