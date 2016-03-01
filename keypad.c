@@ -47,11 +47,11 @@
 #define DISABLE 0
 #define IN 1
 
-typedef enum odc_rowEnum{
+typedef enum odc_row_stateEnum{
     row1, row2, row3, row4
-} odc_row;
+} odc_row_state;
 
-volatile stateType odc_row = row1;
+volatile  odc_row_state odc_row = row1;
 
 /* Initialize the rows as ODC outputs and the columns as inputs with pull-up
  * resistors. Don't forget about other considerations...
@@ -91,6 +91,7 @@ void initKeypad(void){
  *key to be pressed
  */
 void openScanning (void) {
+    //might be LAT
     ODCR1       = ENABLE;
     ODCR2       = ENABLE;
     ODCR3       = ENABLE;
