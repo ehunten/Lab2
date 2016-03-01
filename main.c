@@ -24,7 +24,7 @@
 
 
 typedef enum stateTypeEnum{
-    init, wait, keyPress, writeKey
+    init, open, wait, keyPress, writeKey
 } stateType;
 
 volatile stateType state = init;
@@ -32,34 +32,44 @@ volatile stateType state = init;
 
 int main(void)
 {
+    
     SYSTEMConfigPerformance(10000000);
-    enableInterrupts();
+    initKeypad();
+    //enableInterrupts();
     initTimer1();
     initTimer2();
     initLCD();
+
     clearLCD();
 
+    
     char key;
 
     while (1) {
 
 
         switch (state) {
-            case init: printStringLCD("Yooooo");
-                state = wait;
+            case init: printStringLCD("Init State");
+                state = open;
                 break;
              
-            case wait: openScanning();
+            case open: printStringLCD("Open scanning");
+                openScanning();
+                state = wait;
                 break;
                 
-            case keyPress: key = scanKeypad();
+            case wait: printStringLCD("Wait");
+                break;
+                
+            case keyPress: printStringLCD("Key Press State");
+                 key = scanKeypad();
                  state = writeKey;
                  break;
 
             case writeKey: printCharLCD(key);
                  moveCursorLCD();
             //add logic here for writing to the second line when done?
-                 state = wait;
+                 state = open;
                  break;
 
             default: printStringLCD("Ruh roh!");
