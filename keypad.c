@@ -111,7 +111,6 @@ void openScanning (void) {
     LATR3       = OPEN;
     LATR4       = OPEN;
     
-    //odc_row = row1;
 }
 /* This function will be called AFTER you have determined that someone pressed
  * SOME key. This function is to figure out WHICH key has been pressed.
@@ -121,69 +120,51 @@ void openScanning (void) {
  */
 char scanKeypad(void){
     char key = 'Q';
-    
-    //odc_row = row1;
-    
-    switch (odc_row) {
-     case row1:
-         clearLCD();
-         printStringLCD("Scan Row 1");
-     delayUs(100000);
-    LATR1       = OPEN;
-    LATR2       = CLOSED;
-    LATR3       = CLOSED;
-    LATR4       = CLOSED;
-       if (PORTC1 == 0)  { return '1'; } 
-       else if (PORTC2 == 0)  { return '2'; }
-       else if (PORTC3 == 0)  { return '3'; }
-     odc_row = row2;
+      
+int i = 0;
 
-     break;
+for (i = 0; i < 3; i++) {
+    if (i == 0) {
+        LATR1       = OPEN;
+        LATR2       = CLOSED;
+        LATR3       = CLOSED;
+        LATR4       = CLOSED;
+           if (PORTC1 == 0)  { key =  '1'; } 
+           else if (PORTC2 == 0)  { key = '2'; }
+           else if (PORTC3 == 0)  { key = '3'; }
+           }
 
-     case row2:
-         clearLCD();
-         printStringLCD("Scan Row 2");
-     delayUs(100000);
-    LATR1       = CLOSED;
-    LATR2       = OPEN;
-    LATR3       = CLOSED;
-    LATR4       = CLOSED;
-      if (PORTC1 == 0)  { return '4'; }
-       else if (PORTC2 == 0) { return '5'; }
-       else if (PORTC3 == 0) { return '6'; }
-     odc_row = row3;
+    else if (i == 1) {
+        LATR1       = CLOSED;
+        LATR2       = OPEN;
+        LATR3       = CLOSED;
+        LATR4       = CLOSED;
+        if (PORTC1 == 0)  { key = '4'; }
+        else if (PORTC2 == 0) { key = '5'; }
+        else if (PORTC3 == 0) { key = '6'; }
+         }
+       
+    else if (i == 2) {
+        LATR1       = CLOSED;
+        LATR2       = CLOSED;
+        LATR3       = OPEN;
+        LATR4       = CLOSED;
+          if (PORTC1 == 0) { key = '7'; }
+          else if (PORTC2 == 0) { key = '8'; }
+          else if (PORTC3 == 0) { key = '9'; }
+           }
+       
+       else if (i == 3) {
+        LATR1       = CLOSED;
+        LATR2       = CLOSED;
+        LATR3       = CLOSED;
+        LATR4       = OPEN;
+           if (PORTC1 == 0) { key = '*'; }
+           else if (PORTC2 == 0) { key = '0'; }
+           else if (PORTC3 == 0) { key = '#'; }
+           }
+       }
 
-     break;
-
-     case row3:
-         clearLCD();
-         printStringLCD("Scan Row 3");
-     delayUs(100000);
-    LATR1       = CLOSED;
-    LATR2       = CLOSED;
-    LATR3       = OPEN;
-    LATR4       = CLOSED;
-      if (PORTC1 == 0) { return '7'; }
-       else if (PORTC2 == 0) { return '8'; }
-       else if (PORTC3 == 0) { return '9'; }
-     odc_row = row4;
-
-     break;
-
-     case row4:
-         clearLCD();
-         printStringLCD("Scan Row 4");
-     delayUs(100000);
-    LATR1       = CLOSED;
-    LATR2       = CLOSED;
-    LATR3       = CLOSED;
-    LATR4       = OPEN;
-       if (PORTC1 == 0) { return '*'; }
-       else if (PORTC2 == 0) { return '0'; }
-       else if (PORTC3 == 0) { return '#'; }
-     odc_row = row1;
-     break;
-    }
 
     return key;
 }

@@ -44,6 +44,7 @@ int main(void)
 
     
     char key;
+    int cursorPos = 1;
 
     while (1) {
 
@@ -73,6 +74,14 @@ int main(void)
                 
             case keyPress:
                 printCharLCD(scanKeypad());
+                cursorPos++;
+                if (cursorPos == 17) {
+                    moveCursorLCD(0); 
+                }
+                else if (cursorPos == 33) {
+                    moveCursorLCD(1);
+                    cursorPos = 0;
+                }
                  state = nextKey;
                  break;
 

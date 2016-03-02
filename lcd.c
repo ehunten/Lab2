@@ -163,8 +163,13 @@ void clearLCD(){
 /*
  Use the command for changing the DD RAM address to put the cursor somewhere.
  */
-void moveCursorLCD(){
+void moveCursorLCD(int top){
+    if (top == 0) {
     writeLCD(0b11000000, 0, 40);
+    }
+    else if (top == 1) {
+    writeLCD(0b10000000, 0, 40);
+    }
 }
 
 /*
@@ -179,7 +184,7 @@ void testLCD(){
     for(i = 0; i < 1000; i++) delayUs(1000);
     clearLCD();
     printStringLCD("Hello!");
-    moveCursorLCD(1, 2);
+    //moveCursorLCD(1, 2);
     for(i = 0; i < 1000; i++) delayUs(1000);
     printStringLCD("Hello!");
     for(i = 0; i < 1000; i++) delayUs(1000);
