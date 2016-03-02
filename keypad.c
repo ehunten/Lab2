@@ -118,7 +118,9 @@ void openScanning (void) {
  */
 char scanKeypad(void){
     char key = 'Q';
-
+    
+    odc_row = row1;
+    
     switch (odc_row) {
      case row1:
     LATR1       = OPEN;
