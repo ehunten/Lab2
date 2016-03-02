@@ -14,6 +14,7 @@
 #include "timer.h"
 #include "lcd.h"
 #include "interrupt.h"
+#include "password.h"
 
 //DEFINES
 #define ENABLE 1
@@ -24,7 +25,7 @@
 
 
 typedef enum stateTypeEnum{
-    init, open, wait, dbC1, dbD1, keyPress, nextKey
+    enter, open, wait, dbC1, dbD1, keyPress, nextKey
 } stateType;
 
 volatile stateType state = init;
@@ -50,8 +51,10 @@ int main(void)
 
 
         switch (state) {
-            case init:
+            case enter:
                 clearLCD();
+                printStringLCD("Enter:")
+                moveCursorLCD(0);
                 state = open;
                 break;
              
@@ -73,15 +76,9 @@ int main(void)
                 
                 
             case keyPress:
-                printCharLCD(scanKeypad());
-                cursorPos++;
-                if (cursorPos == 17) {
-                    moveCursorLCD(0); 
-                }
-                else if (cursorPos == 33) {
-                    moveCursorLCD(1);
-                    cursorPos = 0;
-                }
+                key = scanKeypad();
+                printCharLCD(key);
+                readPass(key);
                  state = nextKey;
                  break;
 

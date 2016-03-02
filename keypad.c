@@ -119,7 +119,7 @@ void openScanning (void) {
  * the key that is pressed. The ascii character c programmatically is just 'c'
  */
 char scanKeypad(void){
-    char key = 'Q';
+    char key = '-1';
       
 int i = 0;
 
