@@ -28,7 +28,7 @@ typedef enum stateTypeEnum{
     enter, open, wait, dbC1, dbD1, keyPress, nextKey
 } stateType;
 
-volatile stateType state = init;
+volatile stateType state = enter;
 
 
 int main(void)
@@ -53,7 +53,7 @@ int main(void)
         switch (state) {
             case enter:
                 clearLCD();
-                printStringLCD("Enter:")
+                printStringLCD("Enter:");
                 moveCursorLCD(0);
                 state = open;
                 break;
