@@ -25,11 +25,11 @@
 
 
 typedef enum stateTypeEnum{
-    enter, open, wait, dbC1, dbD1, keyPress, nextKey
+    enter, open, wait, debounce, setMode, entryWait, entryMode, setWait, entryOpen, setOpen
 } stateType;
 
-volatile stateType state = init;
-
+volatile stateType state = enter;
+volatile stateType nextState = enter;
 
 int main(void)
 {
@@ -46,50 +46,105 @@ int main(void)
     
     char key;
     int cursorPos = 1;
+    int star = 0;
 
     while (1) {
 
-
-        switch (state) {
-            case enter:
-                clearLCD();
-                printStringLCD("Enter:")
-                moveCursorLCD(0);
-                state = open;
-                break;
              
-            case open:
-                openScanning();
-                state = wait;
-                break;
-                
-            case wait: 
-                break;
-                
-            case dbC1: delayUs(50);
-            state = keyPress;
-                break;
-                
-            case dbD1: delayUs(50);
-            state = keyPress;
-                break;
-                
-                
-            case keyPress:
-                key = scanKeypad();
-                printCharLCD(key);
-                readPass(key);
-                 state = nextKey;
-                 break;
-
-            case nextKey:
-                 //moveCursorLCD();
-                 state = open;
-                 break;
-
-            default: printStringLCD("Ruh roh!");
+            switch (state) {
+                case enter:
+                    clearLCD();
+                    printStringLCD("Enter:")
+                    moveCursorLCD(0);
+                    state = wait;
                     break;
-        }
+
+                case wait:
+                    break;
+
+                case debounce:
+                    delayUs(50);
+                    state = nextState;
+                    break;
+
+                case entryMode:
+                    key = scanKeypad();
+                    printCharLCD(key);
+                    state = entryOpen;
+
+                    if (key == '*') {
+                        star++;
+                        if (star == 2) {
+                            state = setOpen;
+                            moveCursorLCD(1);
+                            clearLCD();
+                            printStringLCD("Set Mode")
+                            star = 0;
+                        }
+                        else if (star == 1 & (key != '*' )) {
+                            star = 0;
+                            moveCursorLCD(1);
+                            printStringLCD("Bad Entry");
+                        }
+                    }
+                    else if (key == '#') {
+                        clearLCD();
+                        moveCursorLCD(1);
+                        printStringLCD("Bad Entry");
+                    }
+  
+                    //CODE FOR STORING/CHECKING PASSWORDS
+
+                    break;
+
+                case entryOpen:
+                    openScanning();
+                    state = entryWait;
+                    break;
+                
+                case entryWait:
+                    break;
+                
+                case setOpen:
+                    openScanning();
+                    state = setWait;
+                 
+                case setMode:
+                    moveCursorLCD(0);
+                    key = scanKeypad();
+                    printCharLCD(key);
+                    state = setOpen;
+                    
+                    if (key == '*') {
+                        star++;
+                        if (star == 2) {
+                            state = setOpen;
+                            moveCursorLCD(1);
+                            clearLCD();
+                            printStringLCD("Set Mode")
+                            star = 0;
+                        }
+                        else if (star == 1 & (key != '*' )) {
+                            star = 0;
+                            moveCursorLCD(1);
+                            printStringLCD("Bad Entry");
+                        }
+                    }
+                    else if (key == '#') {
+                        clearLCD();
+                        moveCursorLCD(1);
+                        printStringLCD("Bad Entry");
+                    }
+                    //FUNCTIONS FOR VALIDATING AND SAVING PASSWORDS
+                    break;
+                    
+                case setWait:
+                    
+                    break;
+
+                default: printStringLCD("Ruh roh!");
+                    break;
+            }
     }
 
 
@@ -105,35 +160,39 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
 
     if (IFS1bits.CNDIF == 1){
         IFS1bits.CNDIF = OFF;
-        if (PORTC1 == 0) {
-            if (state == wait) {state = dbD1; }
+        if (PORTC1 == 0 | PORTC2 == 0) {
+            if (state == wait | state == entryWait) {
+              nextState = entryMode;
+              state = debounce; 
+            }
+            else if (state == setMode | state == setWait) {
+              nextState = setMode;
+              state = debounce;
+            }
         }
-        
-        else if  (PORTC2 == 0) {
-            if (state == wait) {state = dbD1;}
-        }
-        
-        else if (PORTC1 == 1) {
-            // (state == dbD1) {state = dbD2; }
-            
-        }
-        
-        else if (PORTC2 == 1) {
-            //if (state == dbD1) {state = dbD2; }
-        } 
-    }
 
+      }
+                     
+        else if (PORTC1 == 1) {
+        }    
+        else if (PORTC2 == 1) {
+        } 
+  
 
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
         if (PORTC3 == 0) {
-            if (state == wait) { state = dbC1; }
+          if (state == wait | state == entryWait) {
+            nextState = entryMode;
+            state = debounce; 
+          }
+          else if (state == setMode | state == setWait) {
+            nextState = setMode;
+            state = debounce;
+          }
         }
         else if (PORTC3 == 1) {
-            //if (state == dbC1) { state = dbC2; }
         }
     }
+  }
     
-   
-
-}

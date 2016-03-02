@@ -22,8 +22,10 @@ void storePass(char pass) {
 }
 
 
-void readPass(char pass) {
-    
+void readPass(char pass, int pos) {
+    if (pos == 0) {
+        //store in position 0 in array
+    }
 }
 
 

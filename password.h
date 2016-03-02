@@ -7,5 +7,5 @@
 
 void setPass(char pass);
 void storePass(char pass);
-void readPass (char pass);
+void readPass (char pass, int pos);
 int checkPass(char pass);
