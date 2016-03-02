@@ -24,8 +24,8 @@ void initTimer1(){
     PR1 = 390;                      // Initialize PR1 - should be 10milliseconds
     T1CONbits.TCKPS = PRESC256;     // Initialize pre-scalar
     T1CONbits.TCS = CLEAR;          // Set the oscillator
-    IEC0bits.T1IE = ENABLE;         // Enable the interrupt
-    IPC1bits.T1IP = DEFAULT;        // Configure the Interrupt Priority
+   // IEC0bits.T1IE = ENABLE;         // Enable the interrupt
+   // IPC1bits.T1IP = DEFAULT;        // Configure the Interrupt Priority
     T1CONbits.ON = ENABLE;          // Turn the timer on
 }
 
@@ -35,8 +35,8 @@ void initTimer2(){
     PR2 = 9;                        //Set PRvalue
     T2CONbits.TCKPS = PRESC1;       //Set prescalar
     T2CONbits.TCS = CLEAR;          //Set Oscillator
-    IEC0bits.T2IE = ENABLE;         //enable interrupt
-    IPC2bits.T2IP = DEFAULT;
+  //  IEC0bits.T2IE = ENABLE;         //enable interrupt
+  //  IPC2bits.T2IP = DEFAULT;
     T2CONbits.ON = ENABLE;          //turn timer on
 }
 //Uses timer 1
