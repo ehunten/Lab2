@@ -14,7 +14,8 @@
 #define TRISR1 TRISGbits.TRISG13
 #define TRISR2 TRISGbits.TRISG0
 #define TRISR3 TRISFbits.TRISF1
-#define TRISR4 TRISGbits.TRISG12
+#define TRISR4 TRISCbits.TRISC13
+
 //columns
 #define TRISC1 TRISDbits.TRISD5
 #define TRISC2 TRISDbits.TRISD11
@@ -23,7 +24,7 @@
 #define ODCR1 ODCGbits.ODCG13
 #define ODCR2 ODCGbits.ODCG0
 #define ODCR3 ODCFbits.ODCF1
-#define ODCR4 ODCGbits.ODCG12
+#define ODCR4 ODCCbits.ODCC13
 
 #define PORTC1 PORTDbits.RD5
 #define PORTC2 PORTDbits.RD11
@@ -32,7 +33,7 @@
 #define LATR1 LATGbits.LATG13
 #define LATR2 LATGbits.LATG0
 #define LATR3 LATFbits.LATF1
-#define LATR4 LATGbits.LATG12
+#define LATR4 LATCbits.LATC13
 
 #define CNPUC1 CNPUDbits.CNPUD5 
 #define CNPUC2 CNPUDbits.CNPUD11 
@@ -109,6 +110,8 @@ void openScanning (void) {
     LATR2       = OPEN;
     LATR3       = OPEN;
     LATR4       = OPEN;
+    
+    //odc_row = row1;
 }
 /* This function will be called AFTER you have determined that someone pressed
  * SOME key. This function is to figure out WHICH key has been pressed.
@@ -119,10 +122,13 @@ void openScanning (void) {
 char scanKeypad(void){
     char key = 'Q';
     
-    odc_row = row1;
+    //odc_row = row1;
     
     switch (odc_row) {
      case row1:
+         clearLCD();
+         printStringLCD("Scan Row 1");
+     delayUs(100000);
     LATR1       = OPEN;
     LATR2       = CLOSED;
     LATR3       = CLOSED;
@@ -131,9 +137,13 @@ char scanKeypad(void){
        else if (PORTC2 == 0)  { return '2'; }
        else if (PORTC3 == 0)  { return '3'; }
      odc_row = row2;
+
      break;
 
      case row2:
+         clearLCD();
+         printStringLCD("Scan Row 2");
+     delayUs(100000);
     LATR1       = CLOSED;
     LATR2       = OPEN;
     LATR3       = CLOSED;
@@ -142,9 +152,13 @@ char scanKeypad(void){
        else if (PORTC2 == 0) { return '5'; }
        else if (PORTC3 == 0) { return '6'; }
      odc_row = row3;
+
      break;
 
      case row3:
+         clearLCD();
+         printStringLCD("Scan Row 3");
+     delayUs(100000);
     LATR1       = CLOSED;
     LATR2       = CLOSED;
     LATR3       = OPEN;
@@ -153,9 +167,13 @@ char scanKeypad(void){
        else if (PORTC2 == 0) { return '8'; }
        else if (PORTC3 == 0) { return '9'; }
      odc_row = row4;
+
      break;
 
      case row4:
+         clearLCD();
+         printStringLCD("Scan Row 4");
+     delayUs(100000);
     LATR1       = CLOSED;
     LATR2       = CLOSED;
     LATR3       = CLOSED;
@@ -163,7 +181,7 @@ char scanKeypad(void){
        if (PORTC1 == 0) { return '*'; }
        else if (PORTC2 == 0) { return '0'; }
        else if (PORTC3 == 0) { return '#'; }
-     //odc_row = row1;
+     odc_row = row1;
      break;
     }
 

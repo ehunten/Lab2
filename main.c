@@ -62,11 +62,11 @@ int main(void)
             case wait: 
                 break;
                 
-            case dbC1: //delayUs(50);
+            case dbC1: delayUs(50);
             state = keyPress;
                 break;
                 
-            case dbD1: //delayUs(50);
+            case dbD1: delayUs(50);
             state = keyPress;
                 break;
                 
