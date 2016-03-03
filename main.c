@@ -44,9 +44,15 @@ int main(void)
     clearLCD();
 
     
+    char *pass;
+    char *temp[4];
     char key;
     int cursorPos = 1;
     int star = 0;
+    int entry = 0;
+    int setRow = 0;
+    
+    pass = initPassArrays();
 
     while (1) {
 
@@ -54,8 +60,9 @@ int main(void)
             switch (state) {
                 case enter:
                     clearLCD();
-                    printStringLCD("Enter:")
+                    printStringLCD("Enter:");
                     moveCursorLCD(0);
+                    openScanning();
                     state = wait;
                     break;
 
@@ -73,12 +80,13 @@ int main(void)
                     state = entryOpen;
 
                     if (key == '*') {
+                        entry = 0;
                         star++;
                         if (star == 2) {
                             state = setOpen;
                             moveCursorLCD(1);
                             clearLCD();
-                            printStringLCD("Set Mode")
+                            printStringLCD("Set Mode");
                             star = 0;
                         }
                         else if (star == 1 & (key != '*' )) {
@@ -88,12 +96,37 @@ int main(void)
                         }
                     }
                     else if (key == '#') {
+                        entry = 0;
                         clearLCD();
                         moveCursorLCD(1);
                         printStringLCD("Bad Entry");
                     }
   
-                    //CODE FOR STORING/CHECKING PASSWORDS
+                    else {
+                        if (entry < 3){
+                        temp[entry] = key;
+                        entry++;
+                        }
+                        else if (entry == 3) {
+                            entry = 0;
+                            temp[entry] = key;
+                            if (checkPass(temp, pass) == 1) {
+                                clearLCD();
+                                moveCursorLCD(1);
+                                printStringLCD("Good Password!");
+                                delayUs(2000000);
+                                state = enter;
+                            }
+                            else {
+                                moveCursorLCD(1);
+                                printStringLCD("BAD Password");
+                                moveCursorLCD(0);
+                                printStringLCD("Destruct in 5...");
+                                delayUs(2000000);
+                                state = enter;
+                            }
+                        }
+                    }
 
                     break;
 
@@ -114,28 +147,47 @@ int main(void)
                     key = scanKeypad();
                     printCharLCD(key);
                     state = setOpen;
+                                        
                     
                     if (key == '*') {
                         star++;
+                        entry = 0;
                         if (star == 2) {
                             state = setOpen;
                             moveCursorLCD(1);
                             clearLCD();
-                            printStringLCD("Set Mode")
+                            printStringLCD("Set Mode");
                             star = 0;
                         }
                         else if (star == 1 & (key != '*' )) {
+                            entry = 0;
                             star = 0;
                             moveCursorLCD(1);
                             printStringLCD("Bad Entry");
+                            state = enter;
                         }
                     }
                     else if (key == '#') {
+                        entry = 0;
                         clearLCD();
                         moveCursorLCD(1);
                         printStringLCD("Bad Entry");
+                        state = enter;
                     }
-                    //FUNCTIONS FOR VALIDATING AND SAVING PASSWORDS
+                    
+                    else {
+                        if (entry < 3) {
+                        temp[entry] = key;
+                        entry++;
+                        }
+                        else if (entry == 3) {
+                            entry = 0;
+                            storePass(temp, pass);
+                            state = enter;
+                        }
+                    }
+                    
+                    
                     break;
                     
                 case setWait:

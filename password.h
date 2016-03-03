@@ -5,7 +5,8 @@
  * Created 3/2/16
  */
 
+char *initPassArrays();
 void setPass(char pass);
-void storePass(char pass);
+void storePass(char *temp, char *passwords);
 void readPass (char pass, int pos);
-int checkPass(char pass);
+int checkPass(char *temp, char *passwords);
