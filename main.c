@@ -14,7 +14,7 @@
 #include "timer.h"
 #include "lcd.h"
 #include "interrupt.h"
-#include "password.h"
+//#include "password.h"
 
 //DEFINES
 #define ENABLE 1
@@ -31,6 +31,10 @@ typedef enum stateTypeEnum{
 volatile stateType state = enter;
 volatile stateType nextState = enter;
 
+volatile char passwords[4][4];
+volatile char temp[4];
+volatile int currRow = 0;
+
 int main(void)
 {
     
@@ -43,16 +47,14 @@ int main(void)
 
     clearLCD();
 
-    
-    char *pass;
-    char *temp[4];
+
     char key;
     int cursorPos = 1;
     int star = 0;
     int entry = 0;
-    int setRow = 0;
+    int i = 0;
     
-    pass = initPassArrays();
+    initPasswords();
 
     while (1) {
 
@@ -62,7 +64,6 @@ int main(void)
                     clearLCD();
                     printStringLCD("Enter:");
                     moveCursorLCD(0);
-                    openScanning();
                     state = wait;
                     break;
 
@@ -110,11 +111,13 @@ int main(void)
                         else if (entry == 3) {
                             entry = 0;
                             temp[entry] = key;
-                            if (checkPass(temp, pass) == 1) {
+                            if (checkPass() == 1) {
                                 clearLCD();
                                 moveCursorLCD(1);
                                 printStringLCD("Good Password!");
-                                delayUs(2000000);
+                                for (i = 0;i<400;i++){
+                                delayUs(5000);
+                                }
                                 state = enter;
                             }
                             else {
@@ -122,7 +125,9 @@ int main(void)
                                 printStringLCD("BAD Password");
                                 moveCursorLCD(0);
                                 printStringLCD("Destruct in 5...");
-                                delayUs(2000000);
+                                for (i = 0;i<400;i++){
+                                delayUs(5000);
+                                }
                                 state = enter;
                             }
                         }
@@ -131,7 +136,6 @@ int main(void)
                     break;
 
                 case entryOpen:
-                    openScanning();
                     state = entryWait;
                     break;
                 
@@ -139,7 +143,6 @@ int main(void)
                     break;
                 
                 case setOpen:
-                    openScanning();
                     state = setWait;
                  
                 case setMode:
@@ -182,7 +185,7 @@ int main(void)
                         }
                         else if (entry == 3) {
                             entry = 0;
-                            storePass(temp, pass);
+                            storePass();
                             state = enter;
                         }
                     }
@@ -191,7 +194,6 @@ int main(void)
                     break;
                     
                 case setWait:
-                    
                     break;
 
                 default: printStringLCD("Ruh roh!");
@@ -247,4 +249,50 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
         }
     }
   }
+
+
+void initPasswords() {
     
+    int i = 0;
+    int j = 0;
+    
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            passwords[i][j] = 'x';
+        }
+    }
+}
+
+void storePass() {
+    int i = 0;
+    
+    for (i = 0; i < 4; i++) {
+        passwords[currRow][i] = temp[i];
+    }
+    currRow++;
+    if (currRow == 3) {
+        currRow = 0;
+    }
+}
+    
+int checkPass() {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    
+    for (i = 0; i < 4; i++) {
+        k = 0;
+        for (j = 0; j < 4; j++) {
+            if (temp[j] == passwords[i][j]) {
+                k++;
+            }
+        }
+        
+        if (k == 3) {
+            return 1;
+        }
+        
+    }
+    
+    return 0;
+}

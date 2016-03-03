@@ -4,5 +4,4 @@ keypad.h  \
 config.h  \
 timer.h  \
 lcd.h  \
- interrupt.h  \
-password.h 
+ interrupt.h 
