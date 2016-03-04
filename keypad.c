@@ -14,9 +14,9 @@
 
 //rows
 #define TRISR1 TRISGbits.TRISG13
-#define TRISR2 TRISGbits.TRISG0
+#define TRISR4 TRISGbits.TRISG0
 #define TRISR3 TRISFbits.TRISF1
-#define TRISR4 TRISGbits.TRISG15
+#define TRISR2 TRISDbits.TRISD12
 
 //columns
 #define TRISC1 TRISDbits.TRISD5
@@ -24,18 +24,18 @@
 #define TRISC3 TRISCbits.TRISC14
 
 #define ODCR1 ODCGbits.ODCG13
-#define ODCR2 ODCGbits.ODCG0
+#define ODCR4 ODCGbits.ODCG0
 #define ODCR3 ODCFbits.ODCF1
-#define ODCR4 ODCGbits.ODCG15
+#define ODCR2 ODCDbits.ODCD12
 
 #define PORTC1 PORTDbits.RD5
 #define PORTC2 PORTDbits.RD11
 #define PORTC3 PORTCbits.RC14
 
 #define LATR1 LATGbits.LATG13
-#define LATR2 LATGbits.LATG0
+#define LATR4 LATGbits.LATG0
 #define LATR3 LATFbits.LATF1
-#define LATR4 LATGbits.LATG15
+#define LATR2 LATDbits.LATD12
 
 #define CNPUC1 CNPUDbits.CNPUD5 
 #define CNPUC2 CNPUDbits.CNPUD11 
