@@ -44,9 +44,7 @@ int main(void)
     initTimer1();
     initTimer2();
     initLCD();
-
     clearLCD();
-
 
     char key;
     int cursorPos = 1;
@@ -72,15 +70,19 @@ int main(void)
 
                 case debounce:
                     delayUs(50);
-                    state = nextState;
+                    //state = nextState;
+                    state = entryMode;
                     break;
 
                 case entryMode:
+                    clearLCD();
+                    printStringLCD("Entry Mode");
                     key = scanKeypad();
                     printCharLCD(key);
                     state = entryOpen;
 
                     if (key == '*') {
+                        printStringLCD("Star Press");
                         entry = 0;
                         star++;
                         if (star == 2) {
@@ -89,11 +91,13 @@ int main(void)
                             clearLCD();
                             printStringLCD("Set Mode");
                             star = 0;
+                            //break;
                         }
                         else if (star == 1 & (key != '*' )) {
                             star = 0;
                             moveCursorLCD(1);
                             printStringLCD("Bad Entry");
+                            //break;
                         }
                     }
                     else if (key == '#') {
@@ -101,6 +105,7 @@ int main(void)
                         clearLCD();
                         moveCursorLCD(1);
                         printStringLCD("Bad Entry");
+                        //break;
                     }
   
                     else {
@@ -115,7 +120,7 @@ int main(void)
                                 clearLCD();
                                 moveCursorLCD(1);
                                 printStringLCD("Good Password!");
-                                for (i = 0;i<400;i++){
+                                for (i = 0; i < 400; i++){
                                 delayUs(5000);
                                 }
                                 state = enter;
@@ -125,7 +130,7 @@ int main(void)
                                 printStringLCD("BAD Password");
                                 moveCursorLCD(0);
                                 printStringLCD("Destruct in 5...");
-                                for (i = 0;i<400;i++){
+                                for (i = 0; i < 400; i++){
                                 delayUs(5000);
                                 }
                                 state = enter;
@@ -135,17 +140,18 @@ int main(void)
 
                     break;
 
-                case entryOpen:
+                case entryOpen: printStringLCD("EntryOpen");
                     state = entryWait;
                     break;
                 
-                case entryWait:
+                case entryWait: clearLCD();
+                printStringLCD("EntryWait");
                     break;
                 
-                case setOpen:
+                case setOpen: printStringLCD("SetOpen");
                     state = setWait;
                  
-                case setMode:
+                case setMode: printStringLCD("In Set Mode");
                     moveCursorLCD(0);
                     key = scanKeypad();
                     printCharLCD(key);
@@ -162,7 +168,7 @@ int main(void)
                             printStringLCD("Set Mode");
                             star = 0;
                         }
-                        else if (star == 1 & (key != '*' )) {
+                        else if (star == 1 && (key != '*' )) {
                             entry = 0;
                             star = 0;
                             moveCursorLCD(1);
@@ -193,7 +199,7 @@ int main(void)
                     
                     break;
                     
-                case setWait:
+                case setWait: clearLCD(); printStringLCD("setWait");
                     break;
 
                 default: printStringLCD("Ruh roh!");
@@ -214,12 +220,12 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
 
     if (IFS1bits.CNDIF == 1){
         IFS1bits.CNDIF = OFF;
-        if (PORTC1 == 0 | PORTC2 == 0) {
-            if (state == wait | state == entryWait) {
+        if (PORTC1 == 0 || PORTC2 == 0) {
+            if (state == wait || state == entryWait) {
               nextState = entryMode;
               state = debounce; 
             }
-            else if (state == setMode | state == setWait) {
+            else if (state == setMode || state == setWait) {
               nextState = setMode;
               state = debounce;
             }
@@ -228,24 +234,30 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
       }
                      
         else if (PORTC1 == 1) {
+            nextState = state;
+            state = debounce;
         }    
         else if (PORTC2 == 1) {
+            nextState = state;
+            state = debounce;
         } 
   
 
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
         if (PORTC3 == 0) {
-          if (state == wait | state == entryWait) {
+          if (state == wait || state == entryWait) {
             nextState = entryMode;
             state = debounce; 
           }
-          else if (state == setMode | state == setWait) {
+          else if (state == setMode || state == setWait) {
             nextState = setMode;
             state = debounce;
           }
         }
         else if (PORTC3 == 1) {
+            nextState = state;
+            state = debounce;
         }
     }
   }
