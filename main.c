@@ -14,7 +14,7 @@
 #include "timer.h"
 #include "lcd.h"
 #include "interrupt.h"
-//#include "password.h"
+
 
 //DEFINES
 #define ENABLE 1
@@ -25,7 +25,7 @@
 
 
 typedef enum stateTypeEnum{
-    enter, open, wait, debounce, setMode, entryWait, entryMode, setWait, entryOpen, setOpen
+    enter, open, wait, dbEnter, dbSet, setMode, entryWait, entryMode, setWait, entryOpen, setOpen
 } stateType;
 
 volatile stateType state = enter;
@@ -53,37 +53,48 @@ int main(void)
     int i = 0;
     
     initPasswords();
+    initTemp();
 
     while (1) {
 
              
             switch (state) {
                 case enter:
-                    clearLCD();
-                    printStringLCD("Enter: ");
+                    moveCursorLCD(1);
+                    printStringLCD("Entry Mode");
                     moveCursorLCD(0);
                     state = wait;
                     break;
 
-                case wait: printStringLCD("WAIT");
-                clearLCD();
+                case wait:
                     break;
 
-                case debounce: printStringLCD("debounce");
-                clearLCD();
+                case dbEnter:
+                    state = entryMode;
                     delayUs(50);
-                    state = nextState;
-                    //state = entryMode;
+                    break;
+                    
+                case dbSet:
+                    state = setMode;
+                    delayUs(50);
                     break;
 
                 case entryMode:
                     clearLCD();
+                    moveCursorLCD(1);
                     printStringLCD("Entry Mode");
                     key = scanKeypad();
                     moveCursorLCD(0);
                     printCharLCD(key);
                     state = entryWait;
 
+                    if (star == 1 && (key != '*' )) {
+                            star = 0;
+                            moveCursorLCD(1);
+                            printStringLCD("Bad Entry");
+                            //break;
+                        }
+                    
                     if (key == '*') {
                         entry = 0;
                         star++;
@@ -95,19 +106,16 @@ int main(void)
                             star = 0;
                             //break;
                         }
-                        else if (star == 1 & (key != '*' )) {
-                            star = 0;
-                            moveCursorLCD(1);
-                            printStringLCD("Bad Entry");
-                            //break;
-                        }
                     }
                     else if (key == '#') {
                         entry = 0;
                         clearLCD();
                         moveCursorLCD(1);
                         printStringLCD("Bad Entry");
-                        //break;
+                        for (i = 0; i < 400; i++){
+                        delayUs(5000);
+                        }
+                        break;
                     }
   
                     else {
@@ -126,6 +134,7 @@ int main(void)
                                 for (i = 0; i < 400; i++){
                                 delayUs(5000);
                                 }
+                                clearLCD();
                                 state = enter;
                             }
                             else {
@@ -136,6 +145,7 @@ int main(void)
                                 for (i = 0; i < 400; i++){
                                 delayUs(5000);
                                 }
+                                clearLCD();
                                 state = enter;
                             }
                         }
@@ -144,7 +154,7 @@ int main(void)
                     break;
 
                 
-                case entryWait:
+                case entryWait: 
                     break;
 
                  
@@ -154,6 +164,14 @@ int main(void)
                     printCharLCD(key);
                     state = setWait;
                                         
+                    if (star == 1 && (key != '*' )) {
+                        entry = 0;
+                        star = 0;
+                        moveCursorLCD(1);
+                        printStringLCD("Bad Entry");
+                        state = enter;
+                        clearLCD();
+                    }
                     
                     if (key == '*') {
                         star++;
@@ -165,13 +183,7 @@ int main(void)
                             printStringLCD("Set Mode");
                             star = 0;
                         }
-                        else if (star == 1 && (key != '*' )) {
-                            entry = 0;
-                            star = 0;
-                            moveCursorLCD(1);
-                            printStringLCD("Bad Entry");
-                            state = enter;
-                        }
+
                     }
                     else if (key == '#') {
                         entry = 0;
@@ -179,6 +191,7 @@ int main(void)
                         moveCursorLCD(1);
                         printStringLCD("Bad Entry");
                         state = enter;
+                        clearLCD();
                     }
                     
                     else {
@@ -192,13 +205,14 @@ int main(void)
                             entry = 0;
                             storePass();
                             state = enter;
+                            clearLCD();
                         }
                     }
                     
                     
                     break;
                     
-                case setWait: clearLCD();
+                case setWait:
                     break;
 
                 default: printStringLCD("Ruh roh!");
@@ -209,7 +223,68 @@ int main(void)
 
     return 0;
 }
+//*********************
+void initPasswords() {
+    
+    int i = 0;
+    int j = 0;
+    
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            passwords[i][j] = '1';
+        }
+    }
+}
 
+void storePass() {
+    int i = 0;
+    
+    for (i = 0; i < 4; i++) {
+        passwords[currRow][i] = temp[i];
+    }
+
+    currRow++;
+    if (currRow == 3) {
+        currRow = 0;
+    }
+
+    return;
+}
+    
+int checkPass() {
+    int i = 0;
+    int j = 0;
+    int same = 0;
+    
+    
+    for (i = 0; i < 4; i++) {
+        same = 0;
+        for (j = 0; j < 4; j++) {
+            if (temp[j] == passwords[i][j]) {
+                same++;
+            }
+            if (same == 3) {
+                return 1;
+            }            
+        }
+    
+    }
+    
+    return 0;
+}
+
+void initTemp() {
+    int i = 0;
+    
+    for (i = 0; i < 4; i++){
+        temp[i] = 'x';
+    }
+}
+
+
+
+
+//**********************
 
 //Button Interrupt
 void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
@@ -221,90 +296,39 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
         IFS1bits.CNDIF = OFF;
         if (PORTC1 == 0 || PORTC2 == 0) {
             if (state == wait || state == entryWait) {
-              nextState = entryMode;
-              state = debounce; 
+              state = dbEnter; 
             }
             else if (state == setMode || state == setWait) {
-              nextState = setMode;
-              state = debounce;
+              state = dbSet;
             }
         }
 
       }
                      
         if (PORTC1 == 1) {
-            nextState = state;
-            state = debounce;
+
         }    
         if (PORTC2 == 1) {
-            nextState = state;
-            state = debounce;
+
         } 
   
 
-    else if (IFS1bits.CNCIF == 1) {
+    if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
         if (PORTC3 == 0) {
             if (state == wait || state == entryWait) {
-              nextState = entryMode;
-              state = debounce; 
+              state = dbEnter; 
             }
             else if (state == setMode || state == setWait) {
-              nextState = setMode;
-              state = debounce;
+              state = dbSet;
             }
-        }
-    }
-         if (PORTC3 == 1) {
-            nextState = state;
-            state = debounce;
         }
     
   }
-
-
-void initPasswords() {
-    
-    int i = 0;
-    int j = 0;
-    
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            passwords[i][j] = 'x';
-        }
+    if (PORTC3 == 1) {
+ 
     }
+    
 }
 
-void storePass() {
-    int i = 0;
-    
-    for (i = 0; i < 4; i++) {
-        passwords[currRow][i] = temp[i];
-    }
-    currRow++;
-    if (currRow == 3) {
-        currRow = 0;
-    }
-}
-    
-int checkPass() {
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    
-    for (i = 0; i < 4; i++) {
-        k = 0;
-        for (j = 0; j < 4; j++) {
-            if (temp[j] == passwords[i][j]) {
-                k++;
-            }
-        }
-        
-        if (k == 3) {
-            return 1;
-        }
-        
-    }
-    
-    return 0;
-}
+
