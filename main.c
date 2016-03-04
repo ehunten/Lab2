@@ -60,7 +60,7 @@ int main(void)
             switch (state) {
                 case enter:
                     clearLCD();
-                    printStringLCD("Enter:");
+                    printStringLCD("Enter: ");
                     moveCursorLCD(0);
                     state = wait;
                     break;
@@ -70,34 +70,34 @@ int main(void)
 
                 case debounce:
                     delayUs(50);
-                    //state = nextState;
-                    state = entryMode;
+                    state = nextState;
+                    //state = entryMode;
                     break;
 
                 case entryMode:
                     clearLCD();
-                    printStringLCD("Entry Mode");
+                    //printStringLCD("Entry Mode");
                     key = scanKeypad();
+                    moveCursorLCD(0);
                     printCharLCD(key);
-                    state = entryOpen;
+                    state = entryWait;
 
                     if (key == '*') {
-                        printStringLCD("Star Press");
                         entry = 0;
                         star++;
                         if (star == 2) {
-                            state = setOpen;
+                            state = setWait;
                             moveCursorLCD(1);
                             clearLCD();
                             printStringLCD("Set Mode");
                             star = 0;
-                            //break;
+                            break;
                         }
                         else if (star == 1 & (key != '*' )) {
                             star = 0;
                             moveCursorLCD(1);
                             printStringLCD("Bad Entry");
-                            //break;
+                            break;
                         }
                     }
                     else if (key == '#') {
@@ -114,8 +114,8 @@ int main(void)
                         entry++;
                         }
                         else if (entry == 3) {
-                            entry = 0;
                             temp[entry] = key;
+                            entry = 0;                            
                             if (checkPass() == 1) {
                                 clearLCD();
                                 moveCursorLCD(1);
@@ -140,29 +140,23 @@ int main(void)
 
                     break;
 
-                case entryOpen: printStringLCD("EntryOpen");
-                    state = entryWait;
-                    break;
                 
-                case entryWait: clearLCD();
-                printStringLCD("EntryWait");
+                case entryWait:
                     break;
-                
-                case setOpen: printStringLCD("SetOpen");
-                    state = setWait;
+
                  
-                case setMode: printStringLCD("In Set Mode");
+                case setMode:
                     moveCursorLCD(0);
                     key = scanKeypad();
                     printCharLCD(key);
-                    state = setOpen;
+                    state = setWait;
                                         
                     
                     if (key == '*') {
                         star++;
                         entry = 0;
                         if (star == 2) {
-                            state = setOpen;
+                            state = setWait;
                             moveCursorLCD(1);
                             clearLCD();
                             printStringLCD("Set Mode");
@@ -190,6 +184,7 @@ int main(void)
                         entry++;
                         }
                         else if (entry == 3) {
+                            temp[entry] = key;
                             entry = 0;
                             storePass();
                             state = enter;
@@ -199,7 +194,7 @@ int main(void)
                     
                     break;
                     
-                case setWait: clearLCD(); printStringLCD("setWait");
+                case setWait: clearLCD();
                     break;
 
                 default: printStringLCD("Ruh roh!");
@@ -233,32 +228,32 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
 
       }
                      
-        else if (PORTC1 == 1) {
-            nextState = state;
-            state = debounce;
-        }    
-        else if (PORTC2 == 1) {
-            nextState = state;
-            state = debounce;
-        } 
-  
+//        else if (PORTC1 == 1) {
+//            nextState = state;
+//            state = debounce;
+//        }    
+//        else if (PORTC2 == 1) {
+//            nextState = state;
+//            state = debounce;
+//        } 
+//  
 
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
         if (PORTC3 == 0) {
-          if (state == wait || state == entryWait) {
-            nextState = entryMode;
-            state = debounce; 
-          }
-          else if (state == setMode || state == setWait) {
-            nextState = setMode;
-            state = debounce;
-          }
+            if (state == wait || state == entryWait) {
+              nextState = entryMode;
+              state = debounce; 
+            }
+            else if (state == setMode || state == setWait) {
+              nextState = setMode;
+              state = debounce;
+            }
         }
-        else if (PORTC3 == 1) {
-            nextState = state;
-            state = debounce;
-        }
+//        else if (PORTC3 == 1) {
+//            nextState = state;
+//            state = debounce;
+//        }
     }
   }
 
