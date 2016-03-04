@@ -10,11 +10,13 @@
 #include <xc.h>
 #include "keypad.h"
 #include "timer.h"
+#include "password.h"
+
 //rows
 #define TRISR1 TRISGbits.TRISG13
 #define TRISR2 TRISGbits.TRISG0
 #define TRISR3 TRISFbits.TRISF1
-#define TRISR4 TRISCbits.TRISC13
+#define TRISR4 TRISGbits.TRISG15
 
 //columns
 #define TRISC1 TRISDbits.TRISD5
@@ -24,7 +26,7 @@
 #define ODCR1 ODCGbits.ODCG13
 #define ODCR2 ODCGbits.ODCG0
 #define ODCR3 ODCFbits.ODCF1
-#define ODCR4 ODCCbits.ODCC13
+#define ODCR4 ODCGbits.ODCG15
 
 #define PORTC1 PORTDbits.RD5
 #define PORTC2 PORTDbits.RD11
@@ -33,7 +35,7 @@
 #define LATR1 LATGbits.LATG13
 #define LATR2 LATGbits.LATG0
 #define LATR3 LATFbits.LATF1
-#define LATR4 LATCbits.LATC13
+#define LATR4 LATGbits.LATG15
 
 #define CNPUC1 CNPUDbits.CNPUD5 
 #define CNPUC2 CNPUDbits.CNPUD11 
@@ -121,50 +123,59 @@ void openScanning (void) {
 char scanKeypad(void){
     char key = 'Q';
       
-int i = 0;
-
-for (i = 0; i < 3; i++) {
-    if (i == 0) {
+IEC1bits.CNCIE = 0;
+IEC1bits.CNDIE = 0;
+//checking first row
         LATR1       = OPEN;
         LATR2       = CLOSED;
         LATR3       = CLOSED;
         LATR4       = CLOSED;
-           if (PORTC1 == 0)  { key =  '1'; } 
+        delayUs(50);
+        if (PORTC1 == 0)  { key =  '1'; } 
            else if (PORTC2 == 0)  { key = '2'; }
            else if (PORTC3 == 0)  { key = '3'; }
-           }
-
-    else if (i == 1) {
+           
+        
+//checking second row
         LATR1       = CLOSED;
         LATR2       = OPEN;
         LATR3       = CLOSED;
         LATR4       = CLOSED;
+        delayUs(50);
         if (PORTC1 == 0)  { key = '4'; }
         else if (PORTC2 == 0) { key = '5'; }
         else if (PORTC3 == 0) { key = '6'; }
-         }
+   
        
-    else if (i == 2) {
+  //checking third row
         LATR1       = CLOSED;
         LATR2       = CLOSED;
         LATR3       = OPEN;
         LATR4       = CLOSED;
+        delayUs(50);
           if (PORTC1 == 0) { key = '7'; }
           else if (PORTC2 == 0) { key = '8'; }
           else if (PORTC3 == 0) { key = '9'; }
-           }
-       
-       else if (i == 3) {
+        
+    
+ //checking fourth row
         LATR1       = CLOSED;
         LATR2       = CLOSED;
         LATR3       = CLOSED;
         LATR4       = OPEN;
+        delayUs(50);
            if (PORTC1 == 0) { key = '*'; }
            else if (PORTC2 == 0) { key = '0'; }
            else if (PORTC3 == 0) { key = '#'; }
-           }
-       }
-
-
+           
+       
+        LATR1       = CLOSED;
+        LATR2       = CLOSED;
+        LATR3       = CLOSED;
+        LATR4       = CLOSED;
+       openScanning();
+       IEC1bits.CNCIE = 1;
+       IEC1bits.CNDIE = 1;
+    
     return key;
 }

@@ -29,7 +29,7 @@ typedef enum stateTypeEnum{
 } stateType;
 
 volatile stateType state = enter;
-
+int len = 0;
 
 int main(void)
 {
@@ -45,7 +45,7 @@ int main(void)
 
     
     char key;
-    int cursorPos = 1;
+    int cursorPos = 0;
 
     while (1) {
 
@@ -53,13 +53,14 @@ int main(void)
         switch (state) {
             case enter:
                 clearLCD();
-                printStringLCD("Enter:");
-                moveCursorLCD(0);
+                //printStringLCD("Enter:");
+                moveCursorLCD(1);
                 state = open;
                 break;
              
             case open:
-                openScanning();
+                //openScanning();
+                
                 state = wait;
                 break;
                 
@@ -78,12 +79,19 @@ int main(void)
             case keyPress:
                 key = scanKeypad();
                 printCharLCD(key);
-                readPass(key);
-                 state = nextKey;
-                 break;
+                state = nextKey;
+                break;
 
             case nextKey:
-                 //moveCursorLCD();
+                cursorPos++;
+               if(cursorPos == 16) {
+                     moveCursorLCD(0);
+                } 
+               else if(cursorPos == 32)
+                {
+                    moveCursorLCD(1);
+                   cursorPos = 0;
+               }
                  state = open;
                  break;
 
