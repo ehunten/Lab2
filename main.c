@@ -29,7 +29,7 @@ typedef enum stateTypeEnum{
 } stateType;
 
 volatile stateType state = enter;
-volatile stateType nextState = enter;
+volatile stateType nextState = entryMode;
 
 volatile char passwords[4][4];
 volatile char temp[4];
@@ -65,10 +65,12 @@ int main(void)
                     state = wait;
                     break;
 
-                case wait:
+                case wait: printStringLCD("WAIT");
+                clearLCD();
                     break;
 
-                case debounce:
+                case debounce: printStringLCD("debounce");
+                clearLCD();
                     delayUs(50);
                     state = nextState;
                     //state = entryMode;
@@ -76,7 +78,7 @@ int main(void)
 
                 case entryMode:
                     clearLCD();
-                    //printStringLCD("Entry Mode");
+                    printStringLCD("Entry Mode");
                     key = scanKeypad();
                     moveCursorLCD(0);
                     printCharLCD(key);
@@ -91,13 +93,13 @@ int main(void)
                             clearLCD();
                             printStringLCD("Set Mode");
                             star = 0;
-                            break;
+                            //break;
                         }
                         else if (star == 1 & (key != '*' )) {
                             star = 0;
                             moveCursorLCD(1);
                             printStringLCD("Bad Entry");
-                            break;
+                            //break;
                         }
                     }
                     else if (key == '#') {
@@ -109,6 +111,7 @@ int main(void)
                     }
   
                     else {
+                        star = 0;
                         if (entry < 3){
                         temp[entry] = key;
                         entry++;
@@ -179,6 +182,7 @@ int main(void)
                     }
                     
                     else {
+                        star = 0;
                         if (entry < 3) {
                         temp[entry] = key;
                         entry++;
@@ -228,15 +232,15 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
 
       }
                      
-//        else if (PORTC1 == 1) {
-//            nextState = state;
-//            state = debounce;
-//        }    
-//        else if (PORTC2 == 1) {
-//            nextState = state;
-//            state = debounce;
-//        } 
-//  
+        if (PORTC1 == 1) {
+            nextState = state;
+            state = debounce;
+        }    
+        if (PORTC2 == 1) {
+            nextState = state;
+            state = debounce;
+        } 
+  
 
     else if (IFS1bits.CNCIF == 1) {
         IFS1bits.CNCIF = OFF;
@@ -250,11 +254,12 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void){
               state = debounce;
             }
         }
-//        else if (PORTC3 == 1) {
-//            nextState = state;
-//            state = debounce;
-//        }
     }
+         if (PORTC3 == 1) {
+            nextState = state;
+            state = debounce;
+        }
+    
   }
 
 

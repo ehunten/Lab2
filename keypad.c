@@ -98,11 +98,6 @@ void initKeypad(void){
     ODCR2       = ENABLE;
     ODCR3       = ENABLE;
     ODCR4       = ENABLE;
-    
-    LATR1       = OPEN;
-    LATR2       = OPEN;
-    LATR3       = OPEN;
-    LATR4       = OPEN;
 
 }
 
@@ -124,35 +119,33 @@ void openScanning (void) {
  * the key that is pressed. The ascii character c programmatically is just 'c'
  */
 char scanKeypad(void){
-    char key = '-1';
+    char key = 'Q';
       
-int i = 0;
 IEC1bits.CNCIE = 0;
 IEC1bits.CNDIE = 0;
-
-        //Scan Row 1
+//checking first row
         LATR1       = OPEN;
         LATR2       = CLOSED;
         LATR3       = CLOSED;
         LATR4       = CLOSED;
         delayUs(50);
-           if (PORTC1 == 0)  { key =  '1'; } 
+        if (PORTC1 == 0)  { key =  '1'; } 
            else if (PORTC2 == 0)  { key = '2'; }
            else if (PORTC3 == 0)  { key = '3'; }
-
-        delayUs(50);
-        //Scan Row 2
+           
+        
+//checking second row
         LATR1       = CLOSED;
         LATR2       = OPEN;
         LATR3       = CLOSED;
         LATR4       = CLOSED;
         delayUs(50);
-            if (PORTC1 == 0)  { key = '4'; }
-            else if (PORTC2 == 0) { key = '5'; }
-            else if (PORTC3 == 0) { key = '6'; }
-
-        delayUs(50);
-        //Scan Row 3        
+        if (PORTC1 == 0)  { key = '4'; }
+        else if (PORTC2 == 0) { key = '5'; }
+        else if (PORTC3 == 0) { key = '6'; }
+   
+       
+  //checking third row
         LATR1       = CLOSED;
         LATR2       = CLOSED;
         LATR3       = OPEN;
@@ -161,9 +154,9 @@ IEC1bits.CNDIE = 0;
           if (PORTC1 == 0) { key = '7'; }
           else if (PORTC2 == 0) { key = '8'; }
           else if (PORTC3 == 0) { key = '9'; }
-     
-        delayUs(50);
-        //Scan Row 4
+        
+    
+ //checking fourth row
         LATR1       = CLOSED;
         LATR2       = CLOSED;
         LATR3       = CLOSED;
@@ -172,13 +165,15 @@ IEC1bits.CNDIE = 0;
            if (PORTC1 == 0) { key = '*'; }
            else if (PORTC2 == 0) { key = '0'; }
            else if (PORTC3 == 0) { key = '#'; }
-      
-        delayUs(50);
-
-    openScanning();
-    IEC1bits.CNCIE = 1;
-    IEC1bits.CNDIE = 1;
-
-
+           
+       
+        LATR1       = CLOSED;
+        LATR2       = CLOSED;
+        LATR3       = CLOSED;
+        LATR4       = CLOSED;
+       openScanning();
+       IEC1bits.CNCIE = 1;
+       IEC1bits.CNDIE = 1;
+    
     return key;
 }
